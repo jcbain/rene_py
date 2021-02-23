@@ -4,10 +4,18 @@ import json
 
 csv_path = sys.argv[1]
 write_path = sys.argv[2]
+
 try:
     output_every = int(sys.argv[3])
-except:
+except IndexError:
+    print('no output_every option selected, defaulting to 1000')
     output_every = 1000
+
+try:
+    rep = sys.argv[5]
+except IndexError:
+    print('no replicate option selected, defaulting to 0')
+    rep = "0"
 
 float_cols = ['select_coef', 'p1_freq', 'p2_freq', 'migr_rate', 'mut_rate', 'recomb_rate']
 int_cols = ['position', 'fitness_width', 'n', 'origin_gen', 'output_gen', 'rep']
@@ -18,7 +26,7 @@ shared_cols =  ['position', 'select_coef', 'm', 'mu', 'r', 'sigsqr', 'n', 'origi
 p1_cols = shared_cols + ['p1_freq']
 p2_cols = shared_cols + ['p2_freq']
 
-def make_json(csv_path, write_path):
+def make_json(csv_path, write_path, output_every, rep):
 
     data = []
     print(output_every)
@@ -27,7 +35,7 @@ def make_json(csv_path, write_path):
     
 
         for row in csvReader:
-            if row['rep'] == '0':
+            if row['rep'] == rep:
                 row['origin_gen'] = int(row['origin_gen'])
                 float_items = { key: float(row[key]) for key in float_cols }
                 int_items = { key: int(row[key]) for key in int_cols }
@@ -60,14 +68,9 @@ def make_json(csv_path, write_path):
                     data.append(p1_row)
                     data.append(p2_row)
 
-                # row['p1_effect'] = row['select_coef'] * row['p1_freq']
-                # row['p2_effect'] = row['select_coef'] * row['p2_freq']
-                # row['effect_size_freq_diff'] = row['p1_effect'] - row['p2_effect']
-
-                # data.append(row)
 
         with open(write_path, 'w', encoding = 'utf-8') as jsonfile:
             jsonfile.write(json.dumps(data))
 
 if __name__ == "__main__":  
-    make_json(csv_path, write_path)
+    make_json(csv_path, write_path, output_every, rep)
