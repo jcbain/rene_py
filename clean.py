@@ -12,7 +12,7 @@ except IndexError:
     output_every = 1000
 
 try:
-    rep = sys.argv[5]
+    rep = sys.argv[4]
 except IndexError:
     print('no replicate option selected, defaulting to 0')
     rep = "0"
