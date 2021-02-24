@@ -2,7 +2,7 @@ import argparse
 import csv
 import json
 
-default_output_file = "/tmp-data/output.json"
+default_output_file = "/tmp/output.json"
 float_cols = ['select_coef', 'p1_freq', 'p2_freq', 'migr_rate', 'mut_rate', 'recomb_rate']
 int_cols = ['position', 'fitness_width', 'n', 'origin_gen', 'output_gen', 'rep']
 
