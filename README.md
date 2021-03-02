@@ -31,7 +31,13 @@ $ docker run <imagename> list_param_sets.py --help
 For the `write_json.py` script, a file is written so it would be helpful to mount a directory from your host on the container
 
 ```sh
-$ docker run -v /path/to/host/dir:/tmp <imagename> write_json -i /tmp/input.txt -o /tmp/output.json
+$ docker run -v /path/to/host/dir:/tmp <imagename> write_json.py -i /tmp/input.txt -o /tmp/output.json
+```
+
+The `latex_image_produce.py` script quickly formats a string with a list of images that can be embedded into a `.tex` file.
+
+```sh
+$ docker run -v /path/to/all/images:/images <imagename> latex_image_produce.py -d /images -n path/in/latex/structure`
 ```
 
 
