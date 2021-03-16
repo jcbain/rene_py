@@ -12,6 +12,8 @@ shared_cols =  ['position', 'select_coef', 'm', 'mu', 'r', 'sigsqr', 'n', 'origi
 p1_cols = shared_cols + ['p1_freq']
 p2_cols = shared_cols + ['p2_freq']
 
+group_cols = ['position', 'm', 'mu', 'r', 'sigsqr', 'n', 'output_gen']
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -32,7 +34,8 @@ def main():
     with open(csv_path, encoding = 'utf-8') as csvfile:
         csvReader = csv.DictReader(csvfile, delimiter = ' ')
     
-
+        previous_pop1 = {key: '' for key in group_cols}
+        previous_pop2 = {key: '' for key in group_cols}
         for row in csvReader:
             if row['rep'] == rep:
                 row['origin_gen'] = int(row['origin_gen'])
@@ -63,9 +66,24 @@ def main():
 
                     p1_row['pop'] = 1
                     p2_row['pop'] = 2
+                    
+                    # if same group cols as previous update effect_size additively
+                    if {key: previous_pop1[key] for key in group_cols} == {key: p1_row[key] for key in group_cols}:
+                        p1_row['effect_size_freq_diff'] = previous_pop1['effect_size_freq_diff'] + p1_row['effect_size_freq_diff']
+                        p2_row['effect_size_freq_diff'] = previous_pop2['effect_size_freq_diff'] + p2_row['effect_size_freq_diff']
+                    elif previous_pop1[group_cols[0]] != '':
+                        # only push data if group data is final
+                        data.append(previous_pop1)
+                        data.append(previous_pop2)
+                    
 
-                    data.append(p1_row)
-                    data.append(p2_row)
+                    previous_pop1 = p1_row
+                    previous_pop2 = p2_row
+
+                      
+        # write final row       
+        data.append(p1_row)
+        data.append(p2_row)
 
     with open(write_path, 'w', encoding = 'utf-8') as jsonfile:
         jsonfile.write(json.dumps(data))
