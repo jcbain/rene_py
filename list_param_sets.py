@@ -6,6 +6,7 @@ default_mut = ["1e-6", "1e-5", "1e-4"]
 default_recomb = ["0.00625"]
 default_sigsqr = ["2", "10", "5", "15", "25"]
 default_n = ["100", "500", "1000", "5000"]
+default_alpha = ["0.1", "0.05"]
 
 def main():
     parser = argparse.ArgumentParser()
@@ -15,6 +16,7 @@ def main():
     parser.add_argument('-r', '--recombinations', nargs='+', action='store', type=str, default=default_recomb)
     parser.add_argument('-s', '--sigsqrs', nargs='+', action='store', type=str, default=default_sigsqr)
     parser.add_argument('-n', '--pops', nargs='+', action='store', type=str, default=default_n)
+    parser.add_argument('-a', '--alpha', nargs='+', action='store', type=str, default=default_alpha)
 
     results = parser.parse_args()
 
@@ -23,8 +25,9 @@ def main():
     r_opts = creators.create_params("r=", *results.recombinations)
     sigsqr_opts = creators.create_params("sigsqr=", *results.sigsqrs)
     n_opts = creators.create_params("n=", *results.pops)
+    alpha_opts = creators.create_params("alpha=", *results.alpha)
 
-    perms = creators.create_permutations(m_opts, mu_opts, r_opts, sigsqr_opts, n_opts)
+    perms = creators.create_permutations(m_opts, mu_opts, r_opts, sigsqr_opts, n_opts, alpha_opts)
 
     for perm in perms:
         print(' '.join([f'--{opt}' for opt in perm]))
