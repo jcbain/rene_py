@@ -3,16 +3,16 @@ import csv
 import json
 
 default_output_file = "/tmp/output.json"
-float_cols = ['select_coef', 'p1_freq', 'p2_freq', 'migr_rate', 'mut_rate', 'recomb_rate']
+float_cols = ['select_coef', 'p1_freq', 'p2_freq', 'migr_rate', 'mut_rate', 'recomb_rate', 'alpha']
 int_cols = ['position', 'fitness_width', 'n', 'origin_gen', 'output_gen', 'rep']
 
 mapped_keys = {'m': 'migr_rate', 'mu': 'mut_rate', 'r': 'recomb_rate', 'sigsqr': 'fitness_width'}
 
-shared_cols =  ['position', 'select_coef', 'm', 'mu', 'r', 'sigsqr', 'n', 'origin_gen', 'output_gen']
+shared_cols =  ['position', 'select_coef', 'm', 'mu', 'r', 'sigsqr', 'n', 'origin_gen', 'output_gen', 'alpha']
 p1_cols = shared_cols + ['p1_freq']
 p2_cols = shared_cols + ['p2_freq']
 
-group_cols = ['position', 'm', 'mu', 'r', 'sigsqr', 'n', 'output_gen']
+group_cols = ['position', 'm', 'mu', 'r', 'sigsqr', 'n', 'output_gen', 'alpha']
 
 def main():
     parser = argparse.ArgumentParser()
@@ -39,8 +39,8 @@ def main():
         for row in csvReader:
             if row['rep'] == rep:
                 row['origin_gen'] = int(row['origin_gen'])
-                float_items = { key: float(row[key]) for key in float_cols }
-                int_items = { key: int(row[key]) for key in int_cols }
+                float_items = { key: float(row[key]) for key in float_cols if key in row }
+                int_items = { key: int(row[key]) for key in int_cols  if key in row}
                 row.update(float_items)
                 row.update(int_items)
 
@@ -55,8 +55,8 @@ def main():
                         row[key] = row.pop(value)
 
 
-                    p1_row = { key: row[key] for key in p1_cols }
-                    p2_row = { key: row[key] for key in p2_cols }
+                    p1_row = { key: row[key] for key in p1_cols if key in row }
+                    p2_row = { key: row[key] for key in p2_cols if key in row}
 
                     p1_row['effect_size_freq'] = row['p1_effect']
                     p2_row['effect_size_freq'] = row['p2_effect']
@@ -68,7 +68,7 @@ def main():
                     p2_row['pop'] = 2
                     
                     # if same group cols as previous update effect_size additively
-                    if {key: previous_pop1[key] for key in group_cols} == {key: p1_row[key] for key in group_cols}:
+                    if {key: previous_pop1[key] for key in group_cols if key in previous_pop1} == {key: p1_row[key] for key in group_cols if key in p1_row}:
                         p1_row['effect_size_freq_diff'] = previous_pop1['effect_size_freq_diff'] + p1_row['effect_size_freq_diff']
                         p2_row['effect_size_freq_diff'] = previous_pop2['effect_size_freq_diff'] + p2_row['effect_size_freq_diff']
                     elif previous_pop1[group_cols[0]] != '':
