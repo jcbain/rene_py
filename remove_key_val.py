@@ -19,7 +19,7 @@ def main():
     with open(infile, encoding='utf-8') as jsonfile:
         data_list = json.load(jsonfile)
 
-        removal_keys = [v for v in dict.keys(data_list) if to_remove in v]
+        removal_keys = [v for v in dict.keys(data_list) if '{}_'.format(to_remove) in '{}_'.format(v)]
 
         for key in removal_keys:
             del data_list[key]
