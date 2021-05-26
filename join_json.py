@@ -2,7 +2,7 @@ import argparse
 import json
 
 default_output_dir = "/tmp"
-default_uniq_params = ['m', 'mu', 'r', 'sigsqr', 'n', 'pop']
+default_uniq_params = ['m', 'mu', 'r', 'sigsqr', 'n', 'pop', 'alpha']
 
 def unique(list1):
  
@@ -52,12 +52,12 @@ def main():
         for f in files:
             with open(f, encoding='utf-8') as jsonfile:
                 data_list = json.load(jsonfile)
-                uniq_params = unique([{key: i[key] for key in default_uniq_params} for i in data_list])  
+                uniq_params = unique([{key: i[key] for key in default_uniq_params if key in i} for i in data_list])  
 
                 data_obj = {}  
                 for p_set in uniq_params: 
                     data_param_set = [i for i in data_list if {key: i[key] for key in p_set} == p_set]
-                    set_key = "_".join(['{}{:f}'.format(k, p_set[k]).rstrip('0').rstrip('.') for k in p_set])
+                    set_key = "_".join(['{}{:.11f}'.format(k, p_set[k]).rstrip('0').rstrip('.') for k in p_set])
                     data_obj[set_key] = data_param_set
                 
             final.update(data_obj)
